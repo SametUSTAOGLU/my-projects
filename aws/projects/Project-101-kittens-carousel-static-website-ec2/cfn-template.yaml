@@ -30,8 +30,7 @@ Resources:
         systemctl start httpd
         systemctl enable httpd
         git clone https://github.com/sametustaoglu/my-projects.git
-        cp /my-project/aws/projects/Project-101-kittens-carousel-static-website-ec2/static-web/* /var/www/html
-        
+        sudo cp /my-projects/aws/projects/Project-101-kittens-carousel-static-website-ec2/static-web/* /var/www/html
 
 
         
