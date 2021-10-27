@@ -13,18 +13,18 @@ Resources:
       KeyName: key
       
       SecurityGroups:
-        - launch-wizard-3
+        - !Ref SG
       Tags:
         - Key: Name
           Value: WebServerofStackName
      
       UserData: 
         !Base64 |
-        #! /bin/bash
+        #!/bin/bash
         #update os
-        sudo yum update -y
+        yum update -y
         #install git
-        sudo yum install git -y
+        yum install git -y
         #install apache server
         sudo yum install -y httpd
         systemctl start httpd
@@ -32,10 +32,27 @@ Resources:
         git clone https://github.com/sametustaoglu/my-projects.git
         sudo cp /my-projects/aws/projects/Project-101-kittens-carousel-static-website-ec2/static-web/* /var/www/html
 
+  SG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: sg icin # Required
+      GroupName: sg
+      SecurityGroupIngress:
+        - IpProtocol: tcp 
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp 
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        
 
         
+      
+     
         
-        
+      
         
         
       
