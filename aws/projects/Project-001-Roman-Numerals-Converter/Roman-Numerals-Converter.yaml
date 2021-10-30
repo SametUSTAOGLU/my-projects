@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This CloudFormation Template was written for 
+  convert desimal to raman.Website will be deployed on Amazon Linux 2 (ami-02e136e904f3da870) 
+  EC2 Instance with custom security group which allows http connections
+   on port 80 and ssh port 22 from anywhere.  Website 
+  is downloaded from my Public Github repository, then deployed on Apache Web Server.
+Parameters:
+  
+Resources:
+  mySG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "80 and 22 ports opened" # Required
+      GroupName: SG-romen
+      SecurityGroupIngress:
+        -
+      Tags:
+        Tags
+      VpcId: "String"
+Outputs:
