@@ -18,17 +18,15 @@ def convert(decimal_num):
 def home():
     if request.method == "POST":
         my_number = request.form.get("number")
-        if  not my_number.isdecimal():
-            return render_template("index.html", not_valid=True)
-        elif int(my_number)>3999:
-            return render_template("index.html", not_valid=True)
-            
+        if   my_number.isdecimal() and int(my_number)<4000:
+            return render_template("result.html",number_decimal=my_number,number_roman=convert(int(my_number)), developer_name="Samet USTAOGLU")
+        
         else:
-            return render_template("result.html",number_decimal=my_number,number_roman=convert(int(my_number)))
+            return render_template("index.html", not_valid=True, developer_name="Samet USTAOGLU")
     else:
         return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)
-
+    #app.run(host='0.0.0.0', port=80)
+    app.run(debug=True)
     #number_roman

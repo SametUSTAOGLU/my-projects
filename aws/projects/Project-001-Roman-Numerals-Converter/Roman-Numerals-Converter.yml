@@ -71,22 +71,15 @@ Resources:
       UserData: !Base64 |
         #!/bin/bash
         yum update -y
-        yum install httpd -y
-        pip3 install flask -y
-        FOLDER="https://raw.githubusercontent.com/sametustaoglu/my-projects/main/aws/projects/Project-001-Roman-Numerals-Converter"
-        cd /var/www/html
-        wget $FOLDER/app.py
-        wget $FOLDER/Roman-Numerals-Converter.yaml
-        wget $FOLDER/project-001-snapshot.png
-        wget $FOLDER/Project_001_.png
-        wget $FOLDER/README.md
-        mkdir templates
-        cd templates
-        wget $FOLDER/index.html
-        wget $FOLDER/result.html
-        python3 app.py
-        systemctl start httpd
-        systemctl enable httpd
+        yum install git -y
+        sudo pip3 install flask 
+        git clone https://github.com/sametustaoglu/my-projects.git
+        cd /home/ec2-user
+        mkdir proje
+        cd proje
+        sudo cp -r /my-projects/aws/projects/Project-001-Roman-Numerals-Converter/* /home/ec2-user/proje
+        sudo python3 app.py
+        
 Outputs:
   WebsiteURL:
     Value: !Sub 
