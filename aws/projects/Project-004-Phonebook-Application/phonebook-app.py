@@ -7,13 +7,12 @@ app = Flask(__name__)
 
 # This "/home/ec2-user/dbserver.endpoint" file has to be created from cloudformation template and it has RDS endpoint
 db_endpoint = open("/home/ec2-user/dbserver.endpoint", 'r', encoding='UTF-8') 
-
 # Configure mysql database
 
 app.config['MYSQL_DATABASE_HOST'] = db_endpoint.readline().strip()
 app.config['MYSQL_DATABASE_USER'] = 'admin'
-app.config['MYSQL_DATABASE_PASSWORD'] = '1234'
-app.config['MYSQL_DATABASE_DB'] = 'cphonebook_db'
+app.config['MYSQL_DATABASE_PASSWORD'] = '12345678'
+app.config['MYSQL_DATABASE_DB'] = 'phonebook_db'
 app.config['MYSQL_DATABASE_PORT'] = 3306
 db_endpoint.close()
 mysql = MySQL()
@@ -26,7 +25,7 @@ cursor = connection.cursor()
 
 def init_phonebook_db():
     phonebook_table = """
-    CREATE TABLE IF NOT EXISTS clarusway_phonebook.phonebook(
+    CREATE TABLE IF NOT EXISTS phonebook_db.phonebook(
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     number VARCHAR(100) NOT NULL,
@@ -179,5 +178,5 @@ def delete_record():
 # Add a statement to run the Flask application which can be reached from any host on port 80.
 if __name__== '__main__':
     init_phonebook_db()
-    # app.run(debug=True)
+    #app.run(debug=True)
     app.run(host='0.0.0.0', port=80) 

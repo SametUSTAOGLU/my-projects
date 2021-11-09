@@ -7,8 +7,8 @@ Parameters:
     Type: AWS::EC2::VPC::Id
 
   myIT:
-    Description: lutfen instance tipini saciniz
-    Type: AWS::EC2::Instance::Id
+    Description: Select the instance type
+    Type: String
     Default: t2.micro
     AllowedValues:
       - t2.micro
@@ -22,9 +22,11 @@ Parameters:
     Default: key
 
   mySubnets:
-    Description: en az iki sabunet seciniz
-    Type: AWS::EC2::Subnet::Id
-    
+    Description: Please select at least 2 subnets. 
+    Type: List<AWS::EC2::Subnet::Id>
+  myVPC:
+    Description: Please select VPC 
+    Type: AWS::EC2::VPC::Id  
 
 Mappings:
   RegionImageMap:
@@ -66,7 +68,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: !Ref sgALB
+          CidrIp: 0.0.0.0/0
       VpcId: !Ref myVPC
   sgRDS:
     Type: AWS::EC2::SecurityGroup
@@ -77,8 +79,8 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          CidrIp: !Ref sgLaunchTemp
-      VpcId: !Ref myVPC
+          CidrIp: 0.0.0.0/0
+      
 
   myLT:
     Type: AWS::EC2::LaunchTemplate
@@ -96,11 +98,17 @@ Resources:
           #!/bin/bash
           yum update -y
           yum install git -y
-          sudo pip3 install flask 
+          sudo pip3 install flask
+          pip3 install flask-mysql
+          pip3 install sqlalchemy
+          pip3 install Flask-SQLAlchemy 
           git clone https://github.com/sametustaoglu/my-projects.git
           cd /home/ec2-user
           mkdir proje
           cd proje
+          endpoint=${!Ref myRDS.Endpoint.Address}
+          touch dbserver.endpoint
+          echo endpoint >  dbserver.endpoint
           sudo cp -r /my-projects/aws/projects/Project-004-Phonebook-Application/* /home/ec2-user/proje
           sudo python3 phonebook-app.py
 
@@ -140,7 +148,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 10
-      HealthCheckTimeoutSeconds: 10
+      HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 3
       Port: 80
       Protocol: HTTP
@@ -158,21 +166,24 @@ Resources:
   myRDS:
     Type: AWS::RDS::DBInstance
     Properties:
-      AvailabilityZone: !GetAZs
-      DBClusterIdentifier: "phonebook_db"
+      AllocatedStorage: '20'
+      
       DBInstanceClass: db.t2.micro # Required
-      DBName: "phonebook_db"
-      DBSecurityGroups:
-        - !GetAtt sgRDS.GroupId
+      DBName: "phonebookdb"
       Engine: mysql
       EngineVersion: 8.0.19
       MasterUserPassword: "12345678"
       MasterUsername: "admin"
       Port: 3306
+
 Outputs:
+  
   AppUrl:
       Description: Url of the ALB
       Value: !Join
         - ""
         - - "http://"
           - !GetAtt myALB.DNSName
+  Cluster:
+    Description: The DB Cluster Name
+    Value: !Ref myRDS
