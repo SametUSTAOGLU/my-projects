@@ -98,25 +98,24 @@ Resources:
         InstanceType: !Ref myIT
         KeyName: !Ref myKP
         SecurityGroupIds:
-          - !GetAtt sgLaunchTemp.GroupId
-        UserData:
-          Fn::Base64:
-            Fn::Sub:
-              - |
-                #!/bin/bash
-                yum update -y
-                yum install git -y
-                sudo pip3 install flask
-                pip3 install flask-mysql
-                pip3 install sqlalchemy
-                pip3 install Flask-SQLAlchemy 
-                git clone https://github.com/sametustaoglu/my-projects.git
-                cd /home/ec2-user
-                echo ${RDSend} >  dbserver.endpoint
-                chmod 777 dbserver.endpoint
-                sudo cp -r /my-projects/aws/projects/Project-004-Phonebook-Application/* /home/ec2-user
-                python3 phonebook-app.py
-              - RDSend: !GetAtt myRDS.Endpoint.Address
+          - !GetAtt sgALB.GroupId
+        
+        UserData: !Base64 |
+          #!/bin/bash
+          yum update -y
+          yum install git -y
+          sudo pip3 install flask
+          pip3 install flask-mysql
+          pip3 install sqlalchemy
+          pip3 install Flask-SQLAlchemy 
+          git clone https://github.com/sametustaoglu/my-projects.git
+          cd /home/ec2-user
+          echo ${RDSEndPoint} >  dbservere.endpoint
+          echo ${!Ref RDSEndPoint} >  dbserver.endpoint
+          chmod 777 dbserver.endpoint
+          sudo cp -r /my-projects/aws/projects/Project-004-Phonebook-Application/* /home/ec2-user
+          python3 phonebook-app.py
+          
 
   myTG:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -143,11 +142,7 @@ Resources:
       PubliclyAccessible: true
       StorageEncrypted: false
       DeleteAutomatedBackups: true
-      DBSecurityGroups: 
-        - 
-          Ref: "sgRDS"
     DeletionPolicy: Snapshot
-
   sgALB:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -171,17 +166,21 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          #CidrIp: 0.0.0.0/0
-          SourceSecurityGroupId: !GetAtt sgALB.GroupId
+          CidrIp: 0.0.0.0/0
+          #SourceSecurityGroupId: !GetAtt sgALB.GroupId
       VpcId: !Ref myVPC
 
   sgRDS:
-      Type: AWS::RDS::DBSecurityGroup
-      Properties:
-        DBSecurityGroupIngress: # Required
-          - EC2SecurityGroupId: !GetAtt sgLaunchTemp.GroupId
-        GroupDescription: "db icin" # Required
-
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: RDS-sec-grup # Required
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+          #SourceSecurityGroupId: !GetAtt sgLaunchTemp.GroupId
+      
 Outputs:
   
   AppUrl:
@@ -195,4 +194,3 @@ Outputs:
     Value: !GetAtt myRDS.Endpoint.Address
 
     
-        
