@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'projedb', # database name in RDS is written here
         'USER': 'admin', # database master username in RDS is written here
         'PASSWORD': config('PASSWORD'),
-        'HOST': 'proje-db.cq03xphyigb0.us-east-1.rds.amazonaws.com',  # database endpoint is written here
+        'HOST': 'proje-dbb.cq03xphyigb0.us-east-1.rds.amazonaws.com',  # database endpoint is written here
         'PORT': '3306' # database port is written here
     }
 }
